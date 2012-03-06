@@ -1,7 +1,7 @@
 /* ------------------------------------------------------------------------
-バナーギャラリー jQuery版
+バナーギャラリー jQuery版 ver.1.1
     サイズ自動調整、キャプション表示、サムネールorビュレット表示、画像リンク設定
-    Copyright (c) 2011, Matsumoto.JS All rights reserved.
+    Copyright (c) 2012, Matsumoto.JS All rights reserved.
 
 【使用方法】（なるべく<head>タグ内にて）
 <script src="js/jquery.min.js" type="text/javascript"></script> 
@@ -11,6 +11,13 @@ $(document).ready( function() {
     $("#testSlide").bannerGallery({interval:5, duration:0.5});
 });
 </script>
+<div id="testSlide">
+  <div id="image-container"></div><!-- イメージ表示部 -->
+  <div id="text-container"></div><!-- テキスト表示部 -->
+  <ul id="thumb-container"><!-- サムネール表示部 -->
+    <!--<li>サムネールが挿入されます</li>-->
+  </ul>
+</div>
 
 【パラメータの説明】
 以下の情報を任意に指定します（上記書式を参考に）
@@ -228,18 +235,22 @@ json: {
 
         //Load data if json
         if  (settings.json) {
+            var suffix = ''; // IE8以前ではサムネールもキャッシュさせない v1.1
+            if ($.browser.msie) { 
+                suffix = '?rd='+(new Date()).getTime();//fetch every time
+            }
             var items = settings.json.items;
             for (var i = 0; i < items.length; i++) {
                 var $li = $('<li>');
                 //has thumb_base
                 if (items[i].thumb_base) {
-                    var $base = $('<img>').attr('src',items[i].thumb_base);
+                    var $base = $('<img>').attr('src',items[i].thumb_base+suffix);
                     $li.append($base);
                 }
                 var $a = $('<a>');
                 var $img = $('<img>');
                 $a.attr('href',items[i].url);
-                $img.attr('src',items[i].thumb?items[i].thumb:items[i].url)
+                $img.attr('src',(items[i].thumb?items[i].thumb:items[i].url)+suffix)
                     .addClass('targetImage');
                 if (items[i].description)
                     $img.data('description',items[i].description);
